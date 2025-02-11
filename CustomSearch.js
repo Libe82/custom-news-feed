@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const apiKey = "YOUR_REAL_API_KEY";  // Replace with your actual API key
+const apiKey = "7dc72a2cd83d4a95ab72a92cd604b6d7";  // Replace with your actual API key
 const apiUrl = `https://newsapi.org/v2/everything?language=en&sortBy=publishedAt&apiKey=${apiKey}`;
 
 export default function CustomSearch() {
