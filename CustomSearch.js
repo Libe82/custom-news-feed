@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import "./styles/globals.css"; // Import styles
 
 export default function CustomSearch() {
   const [results, setResults] = useState([]);
@@ -17,7 +16,7 @@ export default function CustomSearch() {
 
   const fetchNews = async (query) => {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=${query}&apiKey=7dc72a2cd83d4a95ab72a92cd604b6d7`
+      `https://newsapi.org/v2/everything?q=${query}&apiKey=YOUR_REAL_API_KEY`
     );
     const data = await response.json();
     setResults(data.articles || []);
@@ -33,7 +32,7 @@ export default function CustomSearch() {
             <a href={article.url} target="_blank" rel="noopener noreferrer">
               <h3>{article.title}</h3>
             </a>
-            <p><strong>Source:</strong> {article.source.name}</p>
+            <p><strong>Source:</strong> {article.source?.name || "Unknown"}</p>
             {article.urlToImage && <img src={article.urlToImage} alt={article.title} />}
             <p>{article.description}</p>
           </div>
