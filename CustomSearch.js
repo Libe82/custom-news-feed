@@ -16,7 +16,7 @@ export default function CustomSearch() {
 
   const fetchNews = async (query) => {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=${query}&apiKey=YOUR_REAL_API_KEY`
+      `https://newsapi.org/v2/everything?q=${query}&apiKey=7dc72a2cd83d4a95ab72a92cd604b6d7`
     );
     const data = await response.json();
     setResults(data.articles || []);
