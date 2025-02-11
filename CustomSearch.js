@@ -4,7 +4,7 @@ export default function CustomSearch() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
-  // List of default topics for the homepage
+  // Default Topics
   const defaultTopics = [
     "Eco-Friendly Farming & Cultivation",
     "Clean Energy Technology",
@@ -15,19 +15,26 @@ export default function CustomSearch() {
 
   // API Key and Base URL
   const apiKey = "7dc72a2cd83d4a95ab72a92cd604b6d7";
-  const apiUrl = `https://newsapi.org/v2/everything?apiKey=${apiKey}&language=en&pageSize=10&sortBy=publishedAt`;
+  const apiUrl = "https://newsapi.org/v2/everything";
 
   // Function to fetch news articles
   const fetchNews = (query) => {
     console.log("Fetching news for:", query);
     
-    fetch(`${apiUrl}&q=${encodeURIComponent(query)}`, {
+    fetch(`${apiUrl}?q=${encodeURIComponent(query)}&apiKey=${apiKey}&language=en&pageSize=10&sortBy=publishedAt`, {
+      method: "GET",
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:114.0) Gecko/20100101 Firefox/114.0",
         "Accept": "application/json",
-      },
+        "Content-Type": "application/json",
+        "Referer": "https://yourwebsite.com", // Change this to your actual website
+        "Origin": "https://yourwebsite.com"
+      }
     })
-    .then(response => response.json())
+    .then(response => {
+      console.log("Raw Response:", response);
+      return response.json();
+    })
     .then(data => {
       console.log("API Response:", data);
       if (data.articles) {
@@ -40,12 +47,12 @@ export default function CustomSearch() {
     .catch(error => console.error("Error fetching news:", error));
   };
 
-  // Load default topics on initial render
+  // Load default topics on startup
   useEffect(() => {
-    fetchNews(defaultTopics.join(" OR ")); // Combine topics for broader search
+    fetchNews(defaultTopics.join(" OR ")); // Searches all default topics
   }, []);
 
-  // Handle search form submission
+  // Handle Search
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim() !== "") {
