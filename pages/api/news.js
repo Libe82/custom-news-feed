@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`NewsAPI error: ${response.status}`);
-
+    
     const data = await response.json();
     return res.status(200).json({ articles: data.articles.slice(0, 10) });
   } catch (error) {
