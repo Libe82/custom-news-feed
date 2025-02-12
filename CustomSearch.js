@@ -1,105 +1,87 @@
 import { useState, useEffect } from "react";
-import styles from "./styles/CustomSearch.module.css"; // Archivo CSS moderno
-
-const API_KEY = "7dc72a2cd83d4a95ab72a92cd604b6d7";
-const BASE_URL = "https://newsapi.org/v2/everything";
 
 export default function CustomSearch() {
   const [query, setQuery] = useState("");
   const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // **Temas predeterminados**
-  const defaultTopics = [
-    "Eco-Friendly Farming & Cultivation",
-    "Clean Energy Technology",
-    "Climate Change and New Technology to Fight It",
-    "Astronomy & Physics Discoveries",
-    "Hard Sci-Fi & Sci-Fi News (Books, Movies, Awards like Nebula, Three-Body Problem, etc.)"
-  ];
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchNews(defaultTopics.join(" OR "));
+    fetchNews();
   }, []);
 
-  const fetchNews = async (searchQuery) => {
-    setLoading(true);
-    setError(null);
-
+  const fetchNews = async (searchQuery = "") => {
+    setError("");
     try {
-      const response = await fetch(
-        `${BASE_URL}?q=${encodeURIComponent(searchQuery)}&apiKey=${API_KEY}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
+      const response = await fetch(`/api/news?q=${encodeURIComponent(searchQuery)}`);
       const data = await response.json();
-      setArticles(data.articles || []);
-    } catch (err) {
-      setError("Error fetching news. Please try again.");
-      console.error("Error fetching news:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (query.trim()) {
-      fetchNews(query);
+      if (data.articles && data.articles.length > 0) {
+        setArticles(data.articles);
+      } else {
+        setError("No articles found.");
+      }
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      setError("Error fetching news. Please try again later.");
     }
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Custom News Feed</h1>
-      <p className={styles.subtitle}>
+    <div style={{ maxWidth: "800px", margin: "auto", textAlign: "center", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ fontSize: "28px", marginBottom: "10px" }}>Custom News Feed</h1>
+      <p style={{ fontSize: "16px", color: "#555" }}>
         Latest news on eco-friendly farming, clean energy, climate change, astronomy, physics, and hard sci-fi.
       </p>
 
-      {/* Barra de búsqueda */}
-      <form onSubmit={handleSearch} className={styles.searchForm}>
+      <div style={{ marginBottom: "20px" }}>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Enter search query..."
-          className={styles.searchInput}
+          style={{
+            width: "70%",
+            padding: "10px",
+            fontSize: "16px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
         />
-        <button type="submit" className={styles.searchButton}>
+        <button
+          onClick={() => fetchNews(query)}
+          style={{
+            marginLeft: "10px",
+            padding: "10px 15px",
+            fontSize: "16px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
           Search
         </button>
-      </form>
+      </div>
 
-      {/* Mensajes de carga y error */}
-      {loading && <p className={styles.loading}>Loading news...</p>}
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p style={{ color: "red", fontSize: "16px" }}>{error}</p>}
 
-      {/* Lista de noticias */}
-      <div className={styles.newsGrid}>
-        {articles.length > 0 ? (
-          articles.map((article, index) => (
-            <div key={index} className={styles.newsCard}>
-              {article.urlToImage && (
-                <img src={article.urlToImage} alt={article.title} className={styles.newsImage} />
-              )}
-              <div className={styles.newsContent}>
-                <a href={article.url} target="_blank" rel="noopener noreferrer" className={styles.newsTitle}>
-                  {article.title}
-                </a>
-                <p className={styles.newsSource}>Source: {article.source.name}</p>
-                <p className={styles.newsDescription}>
-                  {article.description ? article.description.substring(0, 120) + "..." : "No description available."}
-                </p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className={styles.noNews}>No news articles found.</p>
-        )}
+      <div>
+        {articles.map((article, index) => (
+          <div key={index} style={{ borderBottom: "1px solid #ddd", padding: "15px", textAlign: "left" }}>
+            <h3 style={{ margin: "0 0 5px" }}>
+              <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: "#007bff", textDecoration: "none" }}>
+                {article.title}
+              </a>
+            </h3>
+            <p style={{ margin: "5px 0", fontSize: "14px", color: "#555" }}>
+              <strong>Source:</strong> {article.source.name}
+            </p>
+            {article.urlToImage && (
+              <img src={article.urlToImage} alt={article.title} style={{ width: "100%", borderRadius: "5px", marginTop: "10px" }} />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
